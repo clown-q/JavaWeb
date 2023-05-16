@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="lq.mapper.IdCardMapper">
+
+    <insert id="insertIdCard" parameterType="idCard" useGeneratedKeys="true">
+        insert into t_idcard(code) values (#{code})
+    </insert>
+
+    <select id="findIdCardById" resultType="IdCard">
+        select * from t_idcard where id=#{id}
+    </select>
+
+    <select id="findIdByCode" resultType="lq.entity.IdCard">
+        select id from t_idcard where code=#{code}
+    </select>
+
+    <select id="findIdCardByIds" resultType="lq.entity.IdCard">
+        select  * from t_idcard where id=#{id}
+    </select>
+</mapper>

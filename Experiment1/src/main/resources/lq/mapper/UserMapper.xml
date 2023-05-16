@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="lq.mapper.UserMapper">
+    <insert id="insertUser" useGeneratedKeys="true" parameterType="user">
+        insert into t_user(username,password,email,age,card_id)
+        values (#{username},#{password},#{email},#{age},#{card_id.id})
+    </insert>
+
+    <select id="findIdByusername" resultType="java.lang.Long">
+        select id from t_user where username=#{username}
+    </select>
+
+
+    <select id="findUserById" parameterType="long" resultType="user">
+        select * from t_user where id=#{id}
+    </select>
+
+    <select id="findUserByUsername" resultType="lq.entity.User">
+        select * from t_user where username=#{username}
+    </select>
+
+    <select id="findUserByUsernameAndPassword" resultType="lq.entity.User">
+        select * from t_user where username='${param1}' and password='${param2}'
+    </select>
+
+    <sql id="userCols">
+        id,username,password,age
+    </sql>
+    <resultMap id="userMap" type="user">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="age" column="age"/>
+    </resultMap>
+    <select id="findUserByMap" resultType="lq.entity.User" resultMap="userMap" parameterType="map">
+        select <include refid="userCols" /> from t_user where username=#{userMap.username} and password=#{userMap.passsword}
+    </select>
+
+    <select id="findUserByEmail" resultType="lq.entity.User" parameterType="user">
+        select * from t_user where email like concat('%',#{email},'%')
+    </select>
+
+    <resultMap id="userWithIdCardMap" type="User">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="email" column="email"/>
+        <result property="age" column="age"/>
+        <association property="card_id" column="card_id" javaType="IdCard" select="lq.mapper.IdCardMapper.findIdCardById" />
+    </resultMap>
+
+    <select id="findUserWithIdCard" resultMap="userWithIdCardMap">
+        select * from t_user where id=#{userWithIdCardMap.id}
+    </select>
+    <resultMap id="userWithIdCardMap1" type="user">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="email" column="email"/>
+        <result property="age" column="age"/>
+        <association property="card_id" javaType="idCard">
+            <id property="id" column="id"/>
+            <result property="code" column="code"/>
+        </association>
+    </resultMap>
+    <select id="findUserWithIdCard1" resultMap="userWithIdCardMap1">
+        select u.*,c.code from t_user u,t_idcard c where u.id=#{id} and u.card_id=c.id
+    </select>
+
+    <resultMap id="userWithRoles" type="user">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="email" column="email"/>
+        <result property="age" column="age"/>
+        <collection property="roles" column="id" ofType="role" select="lq.mapper.RoleMapper.findRolesByUserId"/>
+    </resultMap>
+    <select id="findUserWithRoles" resultType="lq.entity.User" resultMap="userWithRoles">
+        select * from t_user where id=#{id}
+    </select>
+
+    <resultMap id="userWithRoles1" type="user">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="email" column="email"/>
+        <result property="age" column="age"/>
+        <collection property="roles" ofType="role">
+            <id property="id" column="role_id" />
+            <result property="rolename" column="role_name"/>
+            <result property="roledesc" column="role_desc"/>
+        </collection>
+    </resultMap>
+    <select id="findUserWithRoles1" resultType="lq.entity.User" resultMap="userWithRoles1">
+        select u.*,ur.role_id,r.role_name,r.role_desc
+        from t_user u
+                 left JOIN t_user_role ur on u.id=ur.user_id
+                 left JOIN t_role r on ur.role_id=r.id
+        where u.id=#{id}
+    </select>
+    <select id="findUsers" resultType="lq.entity.User" parameterType="user">
+        select * from t_user
+        <where>
+            <if test="username != null and username !=''">
+                and username like concat('%',#{username},'%')
+            </if>
+            <if test="email !=null and email !=''">
+                and email = #{email}
+            </if>
+            <if test="age != null">
+                and age = #{age}
+            </if>
+        </where>
+    </select>
+
+    <select id="findUsersByChoose" resultType="lq.entity.User">
+        select * from t_user
+        <where>
+            <choose>
+                <when test="username != null and username = ''">
+                    username = #{username}
+                </when>
+                <when test="email != null and email !=''">
+                    email = #{email}
+                </when>
+                <otherwise>
+                    age = #{age}
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
+
+
+    <update id="updateUser" parameterType="user">
+        update t_user
+        <set>
+            <if test="username != null and username != ''">
+                username = #{username},
+            </if>
+            <if test="password != null and password !=''">
+                password = #{password},
+            </if>
+            <if test="email != null and email != ''">
+                email =#{email},
+            </if>
+            <if test="age != null">
+                age = #{age},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+
+
+
+    <insert id="insertUser1" parameterType="user" useGeneratedKeys="true" keyProperty="id">
+        insert into t_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="username != null and username != ''">
+                username,
+            </if>
+            <if test="password != null and password != ''">
+                password,
+            </if>
+            <if test="email != null and email != ''">
+                email,
+            </if>
+            <if test="age != null">
+                age,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="username != null and username != ''">
+                #{username},
+            </if>
+            <if test="password != null and password != ''">
+                #{password},
+            </if>
+            <if test="email != null and email != ''">
+                #{email},
+            </if>
+            <if test="age != null">
+                #{age},
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="insertUser1s">
+        insert into t_user (username,password,email,age)
+            values
+                <foreach collection="users" item="user" separator=",">
+                    (#{user.username},#{user.password},#{user.email},#{user.age})
+                </foreach>
+    </insert>
+
+    <delete id="deleteByid" parameterType="Long">
+        delete from t_user where id in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                #{id}
+            </foreach>
+    </delete>
+    <delete id="delUserByid" parameterType="Long">
+        delete from t_user where id = #{id}
+    </delete>
+
+    <resultMap id="UserWithIdCardMaps" type="user">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="email" column="email"/>
+        <result property="age" column="age"/>
+        <association property="card_id" column="card_id" javaType="IdCard" select="lq.mapper.IdCardMapper.findIdCardByIds" />
+    </resultMap>
+    <select id="findUserByIds" resultType="lq.entity.User">
+        select * from t_user where id=#{userWithIdCardMaps.id}
+    </select>
+
+    <select id="findAllUser" resultType="lq.vo.UserVo">
+        select * from t_user,t_idcard,t_role,t_user_role where t_user.card_id=t_idcard.id and t_user.id=t_user_role.user_id and t_role.id=t_user_role.role_id
+    </select>
+
+
+    <update id="updateUsers" parameterType="user">
+        update t_user
+            <set>
+                <if test="username != null and username != ''">
+                    username = #{username},
+                </if>
+                <if test="password != null and password !=''">
+                    password = #{password},
+                </if>
+                <if test="email != null and email != ''">
+                    email =#{email},
+                </if>
+                <if test="age != null">
+                    age = #{age},
+                </if>
+            </set>
+            <where>
+                id = #{id}
+            </where>
+    </update>
+
+
+</mapper>

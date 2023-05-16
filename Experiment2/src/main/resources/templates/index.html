@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>添加用户</title>
+    <meta charset="UTF-8">
+    <style>
+        .hint {
+            font-size: 12px;
+            color: gray;
+        }
+        .error {
+            font-size: 12px;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<h1>添加用户</h1>
+<a href="/user/list">用户列表</a><form method="post" action="/user/add">
+    <p>用户名：
+        <input type="text" name="username" required minlength="4" maxlength="30" pattern="[a-zA-Z0-9]+" >
+        <span class="hint">（用户名由字母和数字组成，长度在 4-30 个字符之间）</span>
+    </p>
+    <p>密码：
+        <input type="password" name="password" required minlength="6" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]+$">
+        <span class="hint">（密码必须包含大小写字母和数字，长度不少于 6 个字符）</span>
+    </p>
+    <p>年龄：
+        <input type="number" name="age" required min="1" max="100">
+        <span class="hint">（请输入 1-100 之间的数字）</span>
+    </p>
+    <p>邮箱：
+        <input type="email" name="email" required>
+        <span class="hint">（请输入有效的邮箱地址）</span>
+    </p>
+    <p>用户身份：
+        <input type="radio" name="RoleId" value="1" /> 管理员
+        <input type="radio" name="RoleId" value="2" /> 用户
+        <input type="radio" name="RoleId" value="3" /> vip会员
+        <span class="hint">（选择注册的身份）</span></p>
+    <p>身份证号：
+        <input type="text" name="Code">
+        <span class="hint">（添加身份证号以核实身份）</span>
+    </p>
+    <p><input type="submit" value="添加用户"></p>
+</form>
+<p th:text="${message}" class="error"></p>
+</body>
+</html>

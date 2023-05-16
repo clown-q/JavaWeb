@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>文件下载</title>
+</head>
+<body>
+
+<!--<a th:href="${'/download/06.SpringBoot使用validation数据校验.pdf'}">06.SpringBoot使用-->
+<!--    validation数据校验.md</a><br/>-->
+<form th:action="${'/upload'}" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" multiple="multiple"><br/>
+    <input type="submit" value="上传">
+</form>
+<br/>
+<!--<a th:href="${'/export/user/poi'}">POI导出用户信息</a>-->
+<br/>
+<form th:action="${'/import/user/poi'}" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" multiple="multiple"><br/>
+    <input type="submit" value="POI导入用户信息">
+</form>
+<br/>
+<!--<a th:href="${'/export/user/easy'}">EasyExcel导出用户信息</a>-->
+<form th:action="${'/import/user/easy'}" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" multiple="multiple"><br/>
+    <input type="submit" value="EasyExcel导入用户信息">
+</form>
+</body>
+</html>

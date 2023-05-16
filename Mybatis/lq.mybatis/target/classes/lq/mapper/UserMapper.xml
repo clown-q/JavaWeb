@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="lq.mapper.UserMapper">
+    <select id="findUserById" parameterType="long" resultType="lq.entity.User">
+        select * from t_user where id=#{id}
+    </select>
+
+    <select id="findUserByUsername" resultType="lq.entity.User">
+        select * from t_user where username=#{username}
+    </select>
+
+    <select id="findUserByUsernameAndPassword" resultType="lq.entity.User">
+        select * from t_user where username='${param1}' and password='${param2}'
+    </select>
+
+    <sql id="userCols">
+        id,username,password,age
+    </sql>
+    <resultMap id="userMap" type="user">
+        <id property="id" column="id" />
+        <result property="username" column="username" />
+        <result property="password" column="password" />
+        <result property="age" column="age" />
+    </resultMap>
+    <select id="findUserByMap" parameterType="Map" resultMap="userMap">
+        select <include refid="userCols"/> from t_user where username=#{userMap.username} and password=#{userMap.password}
+    </select>
+
+    <select id="findUserByEmail" parameterType="lq.entity.User"
+            resultType="lq.entity.User">
+        -- select * from t_user where email like '${email}'
+        select * from t_user where email like concat('%',#{email},'%')
+    </select>
+
+    <resultMap id="userWithIdCardMap" type="User">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="email" column="email"/>
+        <result property="age" column="age"/>
+        <association property="card_id" column="card_id" javaType="IdCard"
+                     select="lq.mapper.IdCardMapper.findIdCardById" />
+    </resultMap>
+
+    <select id="findUserWithIdCard" resultMap="userWithIdCardMap">
+        select * from t_user where id=#{userWithIdCardMap.id}
+    </select>
+
+    <resultMap id="userWithIdCardMap2" type="User">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="email" column="email"/>
+        <result property="age" column="age"/>
+        <association property="id" javaType="idCard">
+            <id property="id" column="id" />
+            <result property="code" column="code" />
+        </association>
+    </resultMap>
+    <select id="findUserWithIdCard2" resultMap="userWithIdCardMap2">
+        select u.*,c.code from t_user u,idcard c where u.id=#{id} and u.card_id=c.id
+    </select>
+</mapper>

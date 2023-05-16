@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<h3>eee页面</h3>
+<p>username：<span th:text="${username}"></span> </p>
+<p>reqeust username：<span th:text="${#request.getAttribute('username')}"></span>
+</p>
+<p>session username：<span th:text="${session.username}"></span> </p>
+<p>context username：<span th:text="${#servletContext.getAttribute('username')}">
+</span> </p>
+</body>
+</html>
