@@ -1,3 +1,3 @@
 # JavaWeb
 
-学习java开发时的一些记录
+学习javaweb应用开发的一些记录
